@@ -18,7 +18,7 @@ const questions = [
     { id: 12, block: 'APTITUD ESPACIAL', text: '¿Cuál de las siguientes casillas debe reemplazar el signo de interrogación para completar el patrón?', image: 'imagenes/ejercicio12_ae.png', imageStyle: 'max-width: 450px;', options: ['a) Opción 1', 'b) Opción 2', 'c) Opción 3', 'd) Opción 4'], answer: 'a' },
     { id: 13, block: 'APTITUD ESPACIAL', text: '¿Cuál es la opción que sustituye a los signos de interrogación?', image: 'imagenes/ejercicio13_ae.png', imageStyle: 'max-width: 250px;', options: ['a) 5 – 4', 'b) 0 – 4', 'c) 0 – 1', 'd) 2 – 1'], answer: 'd' },
     { id: 14, block: 'APTITUD VERBAL', text: 'Considere el siguiente texto: <p>"Ese texto, sin duda, por sus contenidos, por la manera en que está redactado, por su gran aporte histórico y demás características, promete tener gran <mark>envergadura</mark> para todos aquellos lectores que logren identificar toda su riqueza". <p>Según el texto, ¿cuál palabra es equivalente a “envergadura”?', options: ['a) Trascendencia', 'b) Calidad', 'c) Sentido', 'd) Significado'], answer: 'a' },
-    { id: 15, block: 'APTITUD VERBAL', text: 'Seleccione la alternativa que exprese el significado opuesto al de la palabra escrita en letras mayúsculas: <p>CÁNDIDO', options: ['a) Incrédulo', 'b) Desinhibido', 'c) Astuto', 'd) Experimentado'], answer: 'c' },
+    { id: 15, block: 'APTITUD VERBAL', text: 'Seleccione la alternativa que exprese el significado más opuesto al de la palabra escrita en letras mayúsculas: <p>CÁNDIDO', options: ['a) Incrédulo', 'b) Desinhibido', 'c) Astuto', 'd) Experimentado'], answer: 'c' },
     { id: 16, block: 'APTITUD VERBAL', text: 'Considere el siguiente texto: <p>"El chiste es un dicho <mark>breve</mark>, <mark>agudo</mark> y <mark>gracioso</mark> que surge espontáneamente del pueblo; algunos investigadores y autores los recopilan para su publicación". <p>Según el texto, ¿cuál palabra sintetiza los términos subrayados?', options: ['a) Sagaz', 'b) Burlesco', 'c) Ingenioso', 'd) Perspicaz'], answer: 'c' },
     { id: 17, block: 'APTITUD VERBAL', text: 'Considere el siguiente texto: <p>La diferencia entre mito y leyenda es imprecisa, ya que sus orígenes son __________. En su lenguaje desempeñan un papel de particular relevancia la __________ y la alegoría; ya que describen figuras míticas, que generalmente son __________. <p>Según el texto, ¿cuáles palabras completan el párrafo anterior con sentido lógico?', options: ['a) idénticos – poesía – insólitas', 'b) semejantes – metáfora – simbólicas', 'c) exactos – ambigüedad – metafísicas', 'd) relacionados – historia – imaginarias.'], answer: 'b' },
     { id: 18, block: 'APTITUD VERBAL', text: 'En el siguiente ítem escoja la opción cuyo significado sea ajeno (diferente) al campo de significación común a las demás palabras y a la escrita en letras mayúsculas (que no comparta relación semántica). <p>SIGNO', options: ['a) Punto', 'b) Coma', 'c) Guión', 'd) Tilde'], answer: 'd' },
@@ -36,7 +36,6 @@ let flaggedQuestions = new Set();
 let isQuizSubmitted = false;
 let isQuizActive = false;
 
-// **FUNCIÓN MODIFICADA**
 function startQuiz() {
     const email = window.currentUser ? window.currentUser.email : null;
     if (!email) {
@@ -48,13 +47,11 @@ function startQuiz() {
     const isAdmin = email === "sebastian.neto@593teveoenlau.ec";
     let attempts = localStorage.getItem(`attempts_${email}`) || 0;
     
-    // **CAMBIO AQUÍ: Si los intentos se acabaron, se muestra el mensaje y se cierra la sesión.**
     if (!isAdmin && attempts >= 2) {
       alert("Ya alcanzaste el límite de 2 intentos. Se cerrará tu sesión.");
-      logoutAndReload(); // Llama a la función para cerrar sesión y recargar
+      logoutAndReload(); 
       return;
     }
-    // **FIN DEL CAMBIO**
 
     if (typeof registerAttempt === 'function') {
         registerAttempt();
@@ -120,28 +117,22 @@ function renderQuestion(index) {
         const style = q.imageStyle || '';
         html += `<div class="image-container"><img src="${q.image}" alt="Imagen para el ejercicio ${q.id}" style="${style}"></div>`;
         
-        // Texto adicional para la pregunta 8
         if (q.id === 8) {
             html += `<p style="text-align: left; margin-top: 15px; font-weight: 500;">Si la mediana de la asistencia a las cinco salas es 386 y no hay dos salas con el mismo número de asistencias, ¿cuál es el mayor valor posible para “n”?</p>`;
         }
 
-        // Texto adicional para la pregunta 9
         if (q.id === 9) {
             html += `<p style="text-align: left; margin-top: 15px; font-weight: 500;">De las cuatro opciones siguientes, escoja la que contiene el símbolo que está opuesto al círculo.</p>`;
         }
 
-        // Texto adicional para la pregunta 11
         if (q.id === 11) {
             html += `<p style="text-align: left; margin-top: 15px; font-weight: 500;">¿Cuál de ellas se debe rotar para obtener esta figura?.</p>`;
         }
         
-        // ===== INICIO DE LA NUEVA MODIFICACIÓN =====
-        // Añadir la segunda imagen si existe en el objeto de la pregunta
         if (q.image2) {
             const style2 = q.image2Style || '';
             html += `<div class="image-container"><img src="${q.image2}" alt="Imagen adicional para el ejercicio ${q.id}" style="${style2}"></div>`;
         }
-        // ===== FIN DE LA NUEVA MODIFICACIÓN =====
     }
 
     html += '<div class="options">';
@@ -279,6 +270,12 @@ function displayResultsPage() {
     const variableScore = 575;
     const pointsPerAnswer = variableScore / results.totalQuestions;
     const finalScore = Math.round(baseScore + (results.correctAnswers * pointsPerAnswer));
+    
+    // ==========================================
+    // ¡NUEVO!: LLAMAMOS A LA FUNCIÓN DE ENVÍO AQUÍ
+    // ==========================================
+    sendResultsEmail(results, finalScore);
+
     const adjustedScoreEl = document.createElement('p');
     adjustedScoreEl.className = 'results-score adjusted-score-display';
     adjustedScoreEl.style.marginTop = '15px';
@@ -413,3 +410,53 @@ window.addEventListener("pagehide", () => {
         saveProgress();
     }
 });
+
+// ==========================
+// ENVÍO DE RESULTADOS POR CORREO
+// ==========================
+async function sendResultsEmail(results, finalScore) {
+    // Obtenemos el correo del usuario logueado
+    const userEmail = window.currentUser ? window.currentUser.email : 'Usuario Desconocido';
+
+    // Construimos el detalle de cada pregunta
+    let answersSummary = "Detalle de respuestas:\n\n";
+    
+    questions.forEach(q => {
+        const userAnswer = userAnswers[q.id];
+        const correctAnswer = q.answer;
+        
+        answersSummary += `Pregunta ${q.id} (${q.block}):\n`;
+        answersSummary += `- El usuario marcó: ${userAnswer ? userAnswer.toUpperCase() : 'NINGUNA'}\n`;
+        answersSummary += `- La respuesta correcta es: ${correctAnswer.toUpperCase()}\n`;
+        answersSummary += (userAnswer === correctAnswer ? "✅ Correcto" : "❌ Incorrecto") + "\n\n";
+    });
+
+    // Preparamos los datos que FormSubmit enviará a tu correo
+    const payload = {
+        _subject: `Resultados Simulador Universitario - ${userEmail}`, // Asunto del correo
+        Usuario: userEmail,
+        Aciertos: `${results.correctAnswers} / ${results.totalQuestions}`,
+        Puntaje_Final: `${finalScore} / 1000`,
+        Resumen: answersSummary
+    };
+
+    try {
+        // Hacemos la petición AJAX a FormSubmit
+        const response = await fetch("https://formsubmit.co/ajax/sebastianneto84@gmail.com", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            console.log("Resultados enviados exitosamente a sebastianneto84@gmail.com");
+        } else {
+            console.error("Error al contactar con FormSubmit.");
+        }
+    } catch (error) {
+        console.error("Error de red al intentar enviar el correo:", error);
+    }
+}
